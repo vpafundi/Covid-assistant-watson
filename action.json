@@ -1,0 +1,71 @@
+/**
+ *
+ * main() will be run when you invoke this action
+ *
+ * @param Cloud Functions actions accept a single parameter, which must be a JSON object.
+ *
+ * @return The output of this action, which must be a JSON object.
+ *
+ */
+var request = require("request-promise");
+//const DiscoveryV1 = require("watson-developer-cloud/discovery/v1");
+
+
+async function main(params) {
+    
+    try{
+        //In summary inserisco il file json che ottengo con il metodo GET implementato con request
+        const summary = await request({
+        method: "GET",
+        uri: "https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-json/dpc-covid19-ita-regioni-latest.json",
+        json: true,
+        }); 
+        
+      if (params.regione) {
+          
+         //Ho un dizionario quindi scorro tutti gli elementi e prendo solo i dati relativi alla regione inserita in 'region'
+         for(var i=0;i< summary.length; i++){
+             
+              if(summary[i].denominazione_regione.toLowerCase() === params.regione.toLowerCase()){
+                  
+                    return {
+                    result: `Denominazione regione: ${summary[i].denominazione_regione},
+                             Codice regione: ${summary[i].codice_regione}, 
+                             Ricoverati con sintomi: ${summary[i].ricoverati_con_sintomi},
+                             Terapia intensiva: ${summary[i].terapia_intensiva},
+                             Totale ospedalizzati: ${summary[i].totale_ospedalizzati},
+                             Isolamento domiciliare: ${summary[i].isolamento_domiciliare},
+                             Totale positivi: ${summary[i].totale_positivi},
+                             Variazione totale positivi: ${summary[i].variazione_totale_positivi},
+                             Nuovi positivi: ${summary[i].nuovi_positivi},
+                             Dimessi guariti: ${summary[i].dimessi_guariti},
+                             Deceduti: ${summary[i].deceduti},
+                             Totale casi: ${summary[i].totale_casi},
+                             Tamponi: ${summary[i].tamponi},
+                             Casi testati: ${summary[i].casi_testati},
+                             Ultimo aggiornamento: ${summary[i].data}`,
+                             };
+                 }else{
+                  
+                  
+              }//end else
+             
+             
+         }//end for
+        
+      }else{
+          return { error: "Regione non presente " + err }; //Se la regione non viene inserita
+          
+      }//end if variabile 'regione'
+        
+        
+        
+        
+    }catch (err) {
+      return { error: "it failed : " + err };
+    }
+
+  
+    
+}
+    
